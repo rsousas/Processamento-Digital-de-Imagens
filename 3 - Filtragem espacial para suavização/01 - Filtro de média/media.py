@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
+# Filtro da média
 
 import sys
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy import misc 
 from skimage import img_as_float
 from scipy.ndimage import filters 
-import matplotlib.pyplot as plt
+
 
 try:
     entrada = sys.argv[1]
@@ -22,26 +24,31 @@ try:
 except IndexError:
     mask_size = 3
 
-# Carrega a imagem
-img_entrada = misc.imread(entrada) 
-img_entrada = img_as_float(img_entrada)
+	
+# Faz a leitura da imagem
+img_entrada_1 = misc.imread(entrada) 
 
-masc_25 = np.ones([mask_size,mask_size], dtype=float)
-masc_25 = masc_25 / (mask_size*mask_size)
+# Converte os pixels em float, com valores entre 0 e 1
+img_entrada_1 = img_as_float(img_entrada_1)
 
-img_saida = filters.correlate(img_entrada, masc_25, mode='constant', cval=0)
+# Define a máscara
+masc_25 = np.ones([mask_size, mask_size], dtype = float)
+masc_25 = masc_25 / (mask_size * mask_size)
 
-# Salva a imagem processada
+# Aplica a média
+img_saida = filters.correlate(img_entrada_1, masc_25, mode = 'constant', cval = 0)
+
+# Faz o salvamento da imagem de saída após o processamento
 misc.imsave(saida, img_saida)
 
-# Plota imagens
+# Organiza o plote das imagens
 plt.figure()
 plt.subplot(221)
-plt.imshow(img_entrada, cmap='gray', interpolation='nearest')
-plt.title('img_entrada')
+plt.imshow(img_entrada_1, cmap='gray', interpolation='nearest')
+plt.title('img_entrada_1.tif')
 plt.subplot(222)
 plt.imshow(img_saida, cmap='gray', interpolation='nearest')
 plt.title('img_saida')
 
-# Mostra as figuras na tela
+# Plota as imagens de entrada e saída na tela
 plt.show()

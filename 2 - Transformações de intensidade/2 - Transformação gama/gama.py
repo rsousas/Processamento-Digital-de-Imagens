@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+# Transformação gama
 
 import sys
+import matplotlib.pyplot as plt
 from scipy import misc 
 from skimage import exposure
-import matplotlib.pyplot as plt
+
 
 try:
     entrada = sys.argv[1]
@@ -21,16 +23,16 @@ except IndexError:
     gama = 6.0
 
 
-# Carrega a imagem
+# Faz a leitura da imagem
 img_entrada = misc.imread(entrada) 
 
-# Aplica a gama
+# Aplica a função para obtenção gama
 img_saida = exposure.adjust_gamma(img_entrada, gama)
 
-# Salva a imagem processada
+# Faz o salvamento da imagem de saída após o processamento
 misc.imsave(saida, img_saida)
 
-# Plota imagens
+# Organiza o plote das imagens
 plt.figure()
 plt.subplot(221)
 plt.imshow(img_entrada, cmap='gray', interpolation='nearest')
@@ -39,5 +41,5 @@ plt.subplot(222)
 plt.imshow(img_saida, cmap='gray', interpolation='nearest')
 plt.title('img_saida')
 
-# Mostra as figuras na tela
+# Plota as imagens de entrada e saída na tela
 plt.show()

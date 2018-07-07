@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+# Limiarização utilizando o método de Otsu
 
+import sys
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy import misc
 from skimage import img_as_float, filters
-import matplotlib.pyplot as plt
-import sys
+
 
 try:
     entrada = sys.argv[1]
@@ -17,20 +19,22 @@ except IndexError:
     saida = 'img_saida.tif'  
 
     
-# Carrega a imagem
+# Faz a leitura da imagem
 img_entrada = misc.imread(entrada)
+
+# Converte os pixels em float, com valores entre 0 e 1
 img_entrada = img_as_float(img_entrada.astype(np.uint8))
 
 # Limiar de Otsu
-t_otsu = filters.threshold_otsu(img_entrada)
+l_otsu = filters.threshold_otsu(img_entrada)
 
-# Segmenta a imagem por limiarizacao
-img_saida = img_entrada < t_otsu
+# Segmenta a imagem por limiarização
+img_saida = img_entrada < l_otsu
 
-# Salva a imagem processada
+# Faz o salvamento das imagens de saída após o processamento
 misc.imsave(saida, img_saida.astype(np.uint8))
 
-# Plota imagens
+# Organiza o plote das imagens
 plt.figure() 
 plt.subplot(221); 
 plt.imshow(img_entrada, cmap='gray', interpolation='nearest'); 
@@ -39,6 +43,5 @@ plt.subplot(222);
 plt.imshow(img_saida, cmap='gray', interpolation='nearest')
 plt.title('img_saida')
 
-
-# Mostra as figuras na tela
+# Plota as imagens de entrada e saída na tela
 plt.show()

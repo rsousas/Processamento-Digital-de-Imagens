@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
+# Efeitos da suavização e limiarização na detecção de bordas
 
 import numpy as np
+import matplotlib.pyplot as plt
+import sys
 from scipy import misc
 from scipy.ndimage import filters
 from scipy import ndimage as ndi
 from skimage import img_as_float
-import matplotlib.pyplot as plt
-import sys
+
 
 try:
     entrada = sys.argv[1]
@@ -22,46 +24,46 @@ try:
     mask_size = int(sys.argv[3])
 except IndexError:
     mask_size = 3
-	
 
 
-# Carrega a imagem
+# Faz a leitura da imagem
 img_entrada = misc.imread(entrada) 
+
+# Converte os pixels em float, com valores entre 0 e 1
 img_entrada = img_as_float(img_entrada)
 
 # Aplica o filtro da média
-masc = np.ones([mask_size,mask_size], dtype=float)
-masc = masc / (mask_size*mask_size)
-img_entrada = filters.correlate(img_entrada, masc)
+ave_masc = np.ones([mask_size, mask_size], dtype = float)
+ave_masc = ave_masc / (mask_size * mask_size)
+img_entrada = filters.correlate(img_entrada, ave_masc)
 
-# Laplaciano 4
-lap_4 = np.array([[ 0.,  1., 0.],
-                  [ 1., -4., 1.],
-                  [ 0.,  1., 0.]], dtype=float)
-lap_8 = np.array([[-1., -1., -1.],
-                  [-1.,  8., -1.],
-                  [-1., -1., -1.]], dtype=float)
-    
-    
-# Calcula os imagens filtradas pelas máscaras laplacianas.
-im_m0_l4 = ndi.convolve(img_entrada, lap_4 )
-im_m0_l8 = ndi.convolve(img_entrada, lap_8 )
+# Operadores de Sobel Horizontal
+sob_h = np.array([[ -1., -2., -1.],
+                 [  0.,  0.,  0.],
+                 [  1.,  2.,  1.]], dtype = float)
+				 
+# Operadores de Sobel Vertical				 
+sob_v = np.array([[ -1.,  0.,  1.],
+                  [ -2.,  0.,  2.],
+                  [ -1.,  0.,  1.]], dtype = float)
 
-# Corrige intensidades negativas.
-im_m0_l4_ = np.abs( im_m0_l4 )
-im_m0_l8_ = np.abs( im_m0_l8 )
+# Aplica Gradiente de Sobel
+img_saida_h = filters.correlate(img_entrada, sob_h)
+img_saida_v = filters.correlate(img_entrada, sob_v)
 
-# Limiarização do Laplaciano
-perc = 0.2 # Porcentagem da intensidade maxima.
-im_m0_l4_t = im_m0_l4_ >= im_m0_l4_.max() * perc
-im_m0_l8_t = im_m0_l8_ >= im_m0_l8_.max() * perc
+# Magnitude do gradiente
+img_saida = np.sqrt(img_saida_h**2 + img_saida_v**2)
 
-img_saida = im_m0_l8_t
+# Limiarização
+percent = 0.2 # Porcentagem da intensidade maxima
+img_saida = img_saida <= img_saida.max() * percent
+
+#img_saida = img_m0_l8_t
 	
-# Salva a imagem processada
+# Faz o salvamento das imagens de saída após o processamento
 misc.imsave(saida, img_saida.astype(np.uint8))
 
-# Plota imagens
+# Organiza o plote das imagens
 plt.figure() 
 plt.subplot(221); 
 plt.imshow(img_entrada, cmap='gray', interpolation='nearest'); 
@@ -70,6 +72,5 @@ plt.subplot(222);
 plt.imshow(img_saida, cmap='gray', interpolation='nearest')
 plt.title('img_saida')
 
-
-# Mostra as figuras na tela
+# Plota as imagens de entrada e saída na tela
 plt.show()

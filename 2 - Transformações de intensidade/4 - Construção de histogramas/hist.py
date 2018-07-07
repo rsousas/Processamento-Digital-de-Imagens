@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+# Construção de histogramas
 
 import sys
-from scipy import misc 
 import matplotlib.pyplot as plt
+from scipy import misc 
+
 
 try:
     entrada = sys.argv[1]
@@ -12,15 +14,14 @@ except IndexError:
 saida = 'histograma.tif'  
 
 
-# Carrega a imagem
+# Faz a leitura da imagem
 img_entrada = misc.imread(entrada) 
 
-histograma = img_entrada.flatten()
+# Transforma os níveis de intensidade numa imagem de uma dimensão
+histograma = img_entrada.flatten()	
 
+# Organiza o plote das imagens
 plt.figure()
-
-print(histograma)
-# Plota imagens
 plt.subplot(221)
 plt.hist(histograma, bins=256, range=(0,255))
 plt.title('histograma')
@@ -29,5 +30,5 @@ plt.subplot(222)
 plt.imshow(img_entrada, cmap='gray', interpolation='nearest')
 plt.title('img_entrada')
 
-# Mostra as figuras na tela
+# Plota as imagens de entrada e saída na tela
 plt.show()

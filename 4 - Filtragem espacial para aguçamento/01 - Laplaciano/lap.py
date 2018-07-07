@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
+# Laplaciano
 
 import sys
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy import misc
 from scipy.ndimage import filters
 from skimage import img_as_float
-import matplotlib.pyplot as plt
+
 
 try:
     entrada = sys.argv[1]
@@ -18,26 +20,27 @@ except IndexError:
     saida = 'img_saida.tif'  
 
 
-# Carrega a imagem
+# Faz a leitura da imagem
 img_entrada = misc.imread(entrada) 
+
+# Converte os pixels em float, com valores entre 0 e 1
 img_entrada = img_as_float(img_entrada)
 
 # Aplica borramento sobre a imagem
-im = filters.gaussian_filter(img_entrada, sigma=3)
+img_blur = filters.gaussian_filter(img_entrada, sigma = 3)
 
 # Laplaciano -4
-lap = np.array([
- [  0.,  1.,  0.],
- [  1., -4.,  1.],
- [  0.,  1.,  0.]], dtype=float)
+lap_4 = np.array([[  0.,  1.,  0.],
+                  [  1., -4.,  1.],
+                  [  0.,  1.,  0.]], dtype = float)
 
 # Calcula os imagens filtradas pelas máscaras laplacianas.
-img_saida = filters.correlate(im, lap )
+img_saida = filters.correlate(img_blur, lap_4)
 
-# Salva a imagem processada
+# Faz o salvamento das imagens de saída após o processamento
 misc.imsave(saida, img_saida)
 
-# Plota imagens
+# Organiza o plote das imagens
 plt.figure() 
 plt.subplot(221); 
 plt.imshow(img_entrada, cmap='gray', interpolation='nearest'); 
@@ -46,6 +49,5 @@ plt.subplot(222);
 plt.imshow(img_saida, cmap='gray', interpolation='nearest')
 plt.title('img_saida')
 
-
-# Mostra as figuras na tela
+# Plota as imagens de entrada e saída na tela
 plt.show()

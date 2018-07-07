@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+# Equalização de histogramas
 
 import sys
+import matplotlib.pyplot as plt
 from scipy import misc 
 from skimage import exposure
-import matplotlib.pyplot as plt
+
 
 try:
     entrada = sys.argv[1]
@@ -16,16 +18,16 @@ except IndexError:
     saida = 'img_saida.tif'  
 
 
-# Carrega a imagem
+# Faz a leitura da imagem
 img_entrada = misc.imread(entrada) 
 
-# Aplica a equalização
+# Aplica a equalização do histograma e retorna a imagem
 img_saida = exposure.equalize_hist(img_entrada) 
 
-# Salva a imagem processada
+# Faz o salvamento da imagem de saída após o processamento
 misc.imsave(saida, img_saida)
 
-# Plota imagens
+# Organiza o plote das imagens
 plt.figure()
 plt.subplot(221)
 plt.imshow(img_entrada, cmap='gray', interpolation='nearest')
@@ -34,5 +36,5 @@ plt.subplot(222)
 plt.imshow(img_saida, cmap='gray', interpolation='nearest')
 plt.title('img_saida')
 
-# Mostra as figuras na tela
+# Plota as imagens de entrada e saída na tela
 plt.show()
